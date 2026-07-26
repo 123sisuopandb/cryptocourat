@@ -1,6 +1,3 @@
-// CGTTUBE Tool Logic - 7. HASH160 / Program Hash → Address Converter
-// Extracted from original app. 
-
 
 
         // Ensure global access as 'bitcoin'
@@ -8423,11 +8420,3 @@ Isolating algebraic parameters...</pre>`;
 })();
 
     
-
-// Override some global init functions to prevent errors in standalone mode
-document.addEventListener('DOMContentLoaded', function() {
-    // The tool HTML is already present, no need to render cards
-    // Try to focus any primary input if exists
-    const firstInput = document.querySelector('input, textarea');
-    if (firstInput) firstInput.focus();
-});
