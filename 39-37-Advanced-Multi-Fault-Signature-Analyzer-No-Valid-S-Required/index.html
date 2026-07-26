@@ -2638,47 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #ff00ff; text-transform: uppercase;"><i class="fas fa-microchip"></i> 37. Advanced Multi-Fault
-            Signature Analyzer (No Valid S Required)</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Deep Mathematical Recovery for Double/Triple
-            Corrupted ECDSA Signatures</p>
-
-        <div class="input-group" style="margin-bottom: 10px;">
-            <input id="multi_fault_z" placeholder="Message Hash (z) [Hex]">
-            <input id="multi_fault_r" placeholder="Signature R-Value [Hex]">
-        </div>
-
-        <label style="font-size: 12px; color: #ff00ff;">Enter Multiple Corrupted S-Values (one per line):</label>
-        <textarea id="multi_fault_s_list" rows="4"
-            style="width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
-            placeholder="s_fault_1...
-s_fault_2...
-s_fault_3..."></textarea>
-
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <select id="fault_type"
-                style="background: #222; color: #ff00ff; border: 1px solid #ff00ff; border-radius: 4px; padding: 5px;">
-                <option value="bitflip">Single Bit-Flip Logic</option>
-                <option value="boundary">Boundary Byte Fault (Voltage Drop)</option>
-                <option value="offset">Constant Offset (\u03B4-error)</option>
-            </select>
-            <button onclick="processMultiFaultRecovery()"
-                style="background-color: #ff00ff; color: white; font-weight: bold; flex: 1;">RUN DEEP FAULT
-                RECOVERY</button>
-        </div>
-
-        <pre id="out_multi_fault">
-Instructions:
-Traditional DFA requires 1 valid and 1 faulted signature. This advanced tool uses statistical Lattice relations to solve for the Private Key when ALL signatures are faulted.
-1. Use the same Z and R (common in hardware glitch scenarios).
-2. Provide at least 2 or 3 faulted S-values.
-3. The engine will calculate the shortest vector in the fault-lattice to deduce 'd'.
-    </pre>
-    
-
-    <!-- 38. Linear Nonce Correlation Solver (k2 = a*k1 + b) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2751,30 +2711,39 @@ Traditional DFA requires 1 valid and 1 faulted signature. This advanced tool use
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "37. Advanced Multi-Fault Signature Analyzer (No Valid S Required)";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(39);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

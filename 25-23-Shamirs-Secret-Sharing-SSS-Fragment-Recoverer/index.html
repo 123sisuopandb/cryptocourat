@@ -2638,28 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #cccc00;"><i class="fas fa-puzzle-piece"></i> 23. Shamir's Secret Sharing (SSS) Fragment
-            Recoverer</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Combine mathematical fragments to restore a Master
-            Secret (Lagrange Interpolation)</p>
-        <textarea id="sss_input" rows="4"
-            style="width: 100%; padding: 10px; display: block; margin-bottom: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
-            placeholder="Enter exactly 2 or 3 shares (one per line). Format: X:Y (Hex Coordinates)"></textarea>
-        <div class="input-group">
-            <input type="number" id="sss_threshold" value="2" min="2" max="10" placeholder="Minimum threshold required">
-        </div>
-        <button onclick="processSSS()" style="background-color: #cccc00; color: #1e1e1e;">Calculate Lagrange
-            Interpolation (Recover Key)</button>
-        <pre id="out_sss">
-Instructions:
-Advanced security models split a private key into 'N' fragments (e.g. 5 fragments), requiring at least 'M' fragments (threshold, e.g. 3) to rebuild it.
-Paste your fragments (Shares) X,Y coordinates in Hexformat on separate lines as 'X:Y', specify the required threshold, and the tool will use Galois Field Arithmetic to mathematically re-assemble the original Private Key.
-</pre>
-    
-
-    ---
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2732,30 +2711,39 @@ Paste your fragments (Shares) X,Y coordinates in Hexformat on separate lines as 
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "23. Shamir's Secret Sharing (SSS) Fragment Recoverer";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(25);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

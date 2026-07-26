@@ -2638,21 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3>12. Cross-TXID Private Key Recovery (R-Reuse between two TXs)</h3>
-        <input id="txid1_input" placeholder="Enter First Bitcoin Transaction ID (TXID 1)">
-        <input id="txid2_input" placeholder="Enter Second Bitcoin Transaction ID (TXID 2)">
-        <button onclick="processCrossTxid()">Analyze & Recover Key</button>
-        <pre id="out_cross_txid">
-Instructions:
-1. Enter two different TXIDs belonging to the same address.
-2. The tool will extract R, S, Z, Public Key from both transactions inputs.
-3. If it detects the same R-Value across any input between the two TXIDs, it will calculate the Private Key using the ECDSA formula.
-</pre>
-    
-
-    ---
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2725,30 +2711,39 @@ Instructions:
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "12. Cross-TXID Private Key Recovery (R-Reuse between two TXs)";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(13);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

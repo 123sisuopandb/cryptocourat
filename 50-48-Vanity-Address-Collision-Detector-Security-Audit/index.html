@@ -2638,23 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #ffff00;"><i class="fas fa-magic"></i> 48. Vanity Address Collision Detector (Security Audit)
-        </h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Check if an address was generated using a Vanity tool
-            and analyze its entropy weaknesses.</p>
-        <input id="vanity_addr_input" placeholder="Enter Bitcoin Address (1..., 3..., bc1...)">
-        <button onclick="processVanityAudit()" style="background-color: #ffff00; color: #111; font-weight: bold;">Audit
-            Address Entropy Structure</button>
-        <pre id="out_vanity_audit">
-Instructions:
-This tool checks for repeating patterns, human-readable strings, and known vanity prefixes that might indicate the use of weak random number generators during creation.
-</pre>
-    
-
-
-    <!-- 49. SIGHASH_SINGLE "Bug" Analyzer (Historic Vuln) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2727,30 +2711,39 @@ This tool checks for repeating patterns, human-readable strings, and known vanit
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "48. Vanity Address Collision Detector (Security Audit)";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(50);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

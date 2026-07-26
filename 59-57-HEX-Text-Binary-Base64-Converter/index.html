@@ -2638,25 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: var(--bitcoin-orange);"><i class="fas fa-code"></i> 57. HEX ↔ Text ↔ Binary ↔ Base64 Converter</h3>
-        <p style="color:#bbb;font-size:14px;">Multi-format byte converter for cryptographic payloads. Convert between hexadecimal, UTF-8 text, binary and Base64 representations instantly.</p>
-        <div class="input-group">
-            <textarea id="conv_input" placeholder="Enter value in any format..." style="min-height:70px;"></textarea>
-        </div>
-        <div class="input-group" style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button onclick="runConvert('text','hex')" style="width:auto;padding:0 14px;">Text→Hex</button>
-            <button onclick="runConvert('hex','text')" style="width:auto;padding:0 14px;">Hex→Text</button>
-            <button onclick="runConvert('hex','bin')" style="width:auto;padding:0 14px;">Hex→Binary</button>
-            <button onclick="runConvert('bin','hex')" style="width:auto;padding:0 14px;">Binary→Hex</button>
-            <button onclick="runConvert('hex','b64')" style="width:auto;padding:0 14px;">Hex→Base64</button>
-            <button onclick="runConvert('b64','hex')" style="width:auto;padding:0 14px;">Base64→Hex</button>
-        </div>
-        <div id="out_conv" style="margin-top:20px;"><pre style="color:#888;">[STATUS] Waiting for input...</pre></div>
-    
-
-    <!-- 58. Address / RSZ Bit-Leak Analyzer (Nonce Bias Deep Scan) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2729,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "57. HEX \u2194 Text \u2194 Binary \u2194 Base64 Converter";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(59);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

@@ -2638,23 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #5555ff;"><i class="fas fa-user-secret"></i> 24. Blockchain OP_RETURN Hidden Message Decoder
-        </h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Extract hidden ASCII/Hex metadata embedded inside
-            transaction outputs</p>
-        <input id="op_return_input" placeholder="Enter Full Raw Transaction Hex">
-        <button onclick="processOpReturn()" style="background-color: #5555ff; color: white;">Deep Scan for Hidden
-            Payloads</button>
-        <pre id="out_op_return">
-Instructions:
-Hackers and data hoarders often use the OP_RETURN opcode (0x6a) to permanently write text, website hashes, or secret messages directly into the Bitcoin blockchain.
-Paste a raw transaction hex, and this tool will specifically scrape all outputs looking for 0x6a opcodes, extracting and decoding the concealed payload into readable format.
-</pre>
-    
-
-    ---
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2727,30 +2711,39 @@ Paste a raw transaction hex, and this tool will specifically scrape all outputs 
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "24. Blockchain OP_RETURN Hidden Message Decoder";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(26);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

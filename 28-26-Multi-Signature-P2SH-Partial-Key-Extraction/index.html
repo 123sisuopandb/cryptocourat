@@ -2638,26 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #00ffaa;"><i class="fas fa-users-cog"></i> 26. Multi-Signature (P2SH) Partial Key Extraction
-        </h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Breakdown and extract Public Keys hidden inside a
-            P2SH Multi-Sig script</p>
-        <input id="p2sh_redeem_script_input" placeholder="Enter the Raw Redeem Script Hex">
-        <button onclick="processMultiSigExtraction()"
-            style="background-color: #00ffaa; color: #1e1e1e; font-weight: bold;">Extract Participant Public
-            Keys</button>
-        <pre id="out_multisig_extraction">
-Instructions:
-A P2SH Multi-Signature address hides its participants. However, when the coins are spent, the 'Redeem Script' is revealed on the blockchain. 
-1. Paste the Raw Hex of the Redeem Script.
-2. The tool will parse the script mathematically, determine the 'M-of-N' rules, and extract every single participant's Public Key.
-3. You can then use these Public Keys to trace individual identities or further target them.
-</pre>
-    
-
-    ---
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2730,30 +2711,39 @@ A P2SH Multi-Signature address hides its participants. However, when the coins a
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "26. Multi-Signature (P2SH) Partial Key Extraction";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(28);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

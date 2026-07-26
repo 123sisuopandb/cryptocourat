@@ -2638,26 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #00ffcc;"><i class="fas fa-project-diagram"></i> 35. Polnonce (Polynomial Nonce) Solver</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Detect and exploit nonces generated via
-            Linear/Polynomial patterns (LLL Lattice Reduction).</p>
-        <textarea id="polnonce_input" rows="5"
-            style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
-            placeholder="Enter RSZ lines (Format: R:S:Z per line)"></textarea>
-        <button onclick="processPolnonce()"
-            style="background-color: #00ffcc; color: black; font-weight: bold; width: 100%;">Run Polynomial Pattern
-            Analysis</button>
-        <pre id="out_polnonce">
-Instructions:
-If the random number generator (RNG) used for 'k' is weak (e.g., LCG or increments), signatures become linked.
-1. Enter RSZ lines from multiple transactions of the same address.
-2. The tool will check for linear relations and generate a high-performance LLL exploit script.
-</pre>
-    
-
-    <!-- 36. Short Nonce Detector (HNP Vulnerability) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2730,30 +2711,39 @@ If the random number generator (RNG) used for 'k' is weak (e.g., LCG or incremen
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "35. Polnonce (Polynomial Nonce) Solver";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(37);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

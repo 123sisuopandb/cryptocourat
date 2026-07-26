@@ -2638,21 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #ff3300; text-transform: uppercase;"><i class="fas fa-undo-alt"></i> 39. Inverse Nonce ($k_j =
-            k_i^{-1} \pmod n$) Attack</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Recover Private Key from Inversion-Bug Nonce
-            Vulnerability (Bulk Support)</p>
-        <label style="font-size: 11px; color: #ff3300;">BULK RSZ DATA:</label>
-        <textarea id="inv_bulk_rsz" rows="4" placeholder="Paste R:S:Z lines or Bitcoin Address..."></textarea>
-        <button onclick="processInverseNonceAttack()" style="background: #ff3300; color: white; margin-top:10px;">SOLVE
-            QUADRATIC MODULAR CONGRUENCE (ALL PAIRS)</button>
-        <pre id="out_inv_nonce"></pre>
-    
-
-    <!-- 40. Nonce Stuck-Bit / HNP Solver -->
-    <!-- 40. Nonce Stuck-Bit / HNP Solver (Lattice Engine) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2725,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "39. Inverse Nonce ($k_j = k_i^{-1} \\pmod n$) Attack";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(41);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

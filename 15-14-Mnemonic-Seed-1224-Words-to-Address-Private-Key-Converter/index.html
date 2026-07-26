@@ -2638,40 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3>14. Mnemonic Seed (12/24 Words) to Address & Private Key Converter</h3>
-
-        <div style="margin-bottom: 15px;">
-            <label for="wallet_select" style="font-weight: bold; margin-right: 10px;">Select Wallet Type:</label>
-            <select id="wallet_select"
-                style="padding: 5px 10px; background: #2a2a2a; color: white; border: 1px solid #444; border-radius: 4px; font-size: 14px;">
-                <option value="trust">Trust Wallet (Multi-Coin)</option>
-                <option value="binance">Binance Wallet</option>
-                <option value="metamask">Metamask</option>
-            </select>
-
-            <label for="word_count" style="font-weight: bold; margin-left: 20px; margin-right: 10px;">Select Word
-                Count:</label>
-            <select id="word_count"
-                style="padding: 5px 10px; background: #2a2a2a; color: white; border: 1px solid #444; border-radius: 4px; font-size: 14px;">
-                <option value="12">12 Words</option>
-                <option value="24">24 Words</option>
-            </select>
-        </div>
-
-        <textarea id="mnemonic_input" rows="3"
-            style="width: 100%; padding: 10px; display: block; margin-bottom: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
-            placeholder="Enter your mnemonic words separated by space..."></textarea>
-        <button onclick="dumpMnemonicAddress()">Dump Address & Private Key</button>
-        <pre id="out_mnemonic">
-Instructions:
-Choose your wallet type, select word count, and enter your recovery phrase.
-This tool runs completely offline using CryptoJS and SECP256k1 to derive your private key securely?
-</pre>
-    
-
-    ---
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2744,30 +2711,39 @@ This tool runs completely offline using CryptoJS and SECP256k1 to derive your pr
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "14. Mnemonic Seed (12/24 Words) to Address & Private Key Converter";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(15);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

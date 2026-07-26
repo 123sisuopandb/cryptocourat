@@ -2638,46 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #00ccff; text-transform: uppercase;"><i class="fas fa-project-diagram"></i> 38. Linear Nonce
-            Correlation ($k_2 = a \cdot k_1 + b$) Solver</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Exploit Nonces Related by Linear Algebra (Works even
-            if R-Values are different)</p>
-
-        <label style="font-size: 12px; color: #00ccff; font-weight: bold;">BULK RSZ DATA (Format: R:S:Z - one per
-            line):</label>
-        <textarea id="lnc_bulk_rsz" rows="6"
-            style="width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace; margin-top: 5px;"
-            placeholder="R1:S1:Z1
-R2:S2:Z2
-R3:S3:Z3..."></textarea>
-
-        <div style="margin-top: 15px; padding: 10px; background: rgba(0,204,255,0.1); border: 1px dashed #00ccff;">
-            <label style="font-size: 12px; color: #00ccff; font-weight: bold;">SPECIFY LINEAR RELATIONSHIP:</label>
-            <div class="input-group" style="margin-top: 5px;">
-                <input id="lnc_a" value="1" placeholder="Alpha (a) [Hex]" title="Multiplier for k_i">
-                <span style="display: flex; align-items: center; padding-top: 10px;">&bull; k<sub>i</sub> + </span>
-                <input id="lnc_b" value="1" placeholder="Beta (b) [Hex]" title="Constant added to k_i">
-            </div>
-            <small style="color: #888;">Example: To find pairs where k<sub>j</sub> = k<sub>i</sub> + 1, use a=1,
-                b=1.</small>
-        </div>
-
-        <button onclick="processLinearNonceCorrelation()"
-            style="background-color: #00ccff; color: #000; font-weight: bold; margin-top: 15px;">EXECUTE BULK LINEAR
-            SOLVER</button>
-
-        <pre id="out_lnc">
-Instructions:
-Enter multiple R:S:Z lines from the same address. The tool will mathematically analyze EVERY possible pair attempt to solve the Linear Relation.
-1. Paste your list (one R:S:Z per line).
-2. Define the expected relationship (a, b). 
-3. The solver will run modular derivation across the entire matrix.
-    </pre>
-    
-
-    <!-- 39. Inverse Nonce Attack (k2 = 1/k1 mod n) -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2750,30 +2711,39 @@ Enter multiple R:S:Z lines from the same address. The tool will mathematically a
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "38. Linear Nonce Correlation ($k_2 = a \\cdot k_1 + b$) Solver";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(40);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

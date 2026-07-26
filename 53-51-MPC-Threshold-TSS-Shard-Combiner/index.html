@@ -2638,22 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #ff00ff;"><i class="fas fa-layer-group"></i> 51. MPC / Threshold (TSS) Shard Combiner</h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Reconstruct Master Private Key from Mathematical
-            Fragments (Lagrange Interpolation Logic).</p>
-
-        <label style="font-size: 11px; color: #ff00ff;">Enter Shards (Format: index:shard - one per line):</label>
-        <textarea id="mpc_shards_input" rows="4"
-            style="width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
-            placeholder="1:...shard1_hex...&#10;2:...shard2_hex..."></textarea>
-
-        <button onclick="processMPCJoiner()"
-            style="background-color: #ff00ff; color: #000; font-weight: bold; margin-top: 10px;">RECONSTRUCT FROM
-            FRAGMENTS</button>
-        <pre
-            id="out_mpc">Instructions: Enter the required number of MPC fragments (index and hex shard) to calculate the original 256-bit Private Key.</pre>
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2726,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "51. MPC / Threshold (TSS) Shard Combiner";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(53);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

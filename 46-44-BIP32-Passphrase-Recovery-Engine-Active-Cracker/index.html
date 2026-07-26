@@ -2638,85 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #ffaa00;"><i class="fas fa-unlock-alt"></i> 44. BIP32 Passphrase Recovery Engine (Active
-            Cracker)</h3>
-        <p style="color: #aaa; font-size: 12px; margin-top: -5px;">Recover passwords using PBKDF2 Master Key fragments
-            via Dictionary or Brute-Force.</p>
-
-        <label style="font-size: 11px; color:#ffaa00;"> MASTER KEY FRAGMENT (EXTRACTED) - Support Multiple (One per
-            line):</label>
-        <textarea id="mkey_payload" rows="3"
-            placeholder="Master Key Fragment (e.g., $bitcoin$64$...) - Paste one or more per line"
-            style="border-color: #555; background: #000; font-family: monospace; color: #ffcc00; font-size: 12px; width:100%; margin-bottom:10px;"></textarea>
-
-        <div style="margin-top:15px; background: #111; padding: 10px; border-radius: 8px;">
-            <label style="font-size: 13px; color:#fff; font-weight:bold;">RECOVERY MODE:</label>
-            <select id="crack_mode" onchange="toggleCrackUI()"
-                style="width:auto; margin-left:10px; padding:5px; background:#222; color:#ffaa00; border:1px solid #444;">
-                <option value="dict">Dictionary Attack (Paste guesses)</option>
-                <option value="brute">Pure Brute-Force (Math Logic)</option>
-            </select>
-        </div>
-
-        <!-- Dictionary UI -->
-        <div id="gui_dict">
-            <label style="font-size: 11px; color:#aaa; margin-top:10px; display:block;"> POTENTIAL PASSPHRASES (ONE PER
-                LINE):</label>
-            <textarea id="pass_list" rows="5" placeholder="Enter guesses..."></textarea>
-            <input type="file" id="dict_file" accept=".txt"
-                style="font-size:11px; padding:5px; margin-top:5px; border:1px dashed #444;"
-                onchange="loadDictFile(this)">
-        </div>
-
-        <!-- Brute Force UI -->
-        <div id="gui_brute"
-            style="display:none; border: 1px solid #333; padding: 10px; margin-top:10px; background: rgba(255,170,0,0.05);">
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label style="font-size:11px; color:#aaa;">MIN LENGTH:</label>
-                    <input type="number" id="brute_min" value="1" min="1" max="20" style="padding:5px;">
-                </div>
-                <div style="flex:1;">
-                    <label style="font-size:11px; color:#aaa;">MAX LENGTH:</label>
-                    <input type="number" id="brute_max" value="8" min="1" max="20" style="padding:5px;">
-                </div>
-            </div>
-
-            <label style="font-size:11px; color:#aaa; margin-top:10px; display:block;">CHARACTER SET:</label>
-            <select id="brute_charset"
-                style="background:#222; color:#fff; border:1px solid #444; width:100%; padding:8px;">
-                <option value="1">Lowercase letters (a-z)</option>
-                <option value="2">Upper & Lowercase (a-Z)</option>
-                <option value="3">Digits only (0-9)</option>
-                <option value="4">Alphanumeric (a-Z, 0-9)</option>
-                <option value="5">Full Set (Letters, Digits, Symbols)</option>
-                <option value="6">Lowercase & Digits</option>
-            </select>
-
-            <div style="margin-top:10px; display:flex; gap:15px; flex-wrap:wrap;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="checkbox" id="brute_space" style="width:16px; height:16px; margin:0; cursor:pointer;">
-                    <label for="brute_space" style="font-size:12px; color:#ffaa00; cursor:pointer;">Include Space ("
-                        ")</label>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="checkbox" id="brute_random" style="width:16px; height:16px; margin:0; cursor:pointer;">
-                    <label for="brute_random" style="font-size:12px; color:#ffaa00; cursor:pointer;">Random Mode (No
-                        Repeats)</label>
-                </div>
-            </div>
-        </div>
-
-        <button id="btn_recover" onclick="processPassphraseRecovery()"
-            style="background: #ffaa00; color: #000; font-weight: 900; letter-spacing: 1px; margin-top:15px;">
-            START ENGINE RECOVERY
-        </button>
-        <button id="btn_stop" onclick="stopRecovery()"
-            style="display:none; background: #ff3333; color: #fff; margin-top:10px;">STOP ENGINE</button>
-
-        <pre id="out_cracker" style="max-height: 200px; font-size: 11px;">Awaiting instructions...</pre>
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2789,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "44. BIP32 Passphrase Recovery Engine (Active Cracker)";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(46);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

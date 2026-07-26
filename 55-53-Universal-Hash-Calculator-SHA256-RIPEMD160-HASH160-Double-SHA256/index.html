@@ -2638,19 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: var(--bitcoin-orange);"><i class="fas fa-fingerprint"></i> 53. Universal Hash Calculator (SHA256 / RIPEMD160 / HASH160 / Double-SHA256)</h3>
-        <p style="color:#bbb;font-size:14px;">Compute cryptographic hashes used across Bitcoin: SHA-256, RIPEMD-160, HASH160 (RIPEMD160(SHA256(x))) and dblSHA256. Input can be UTF-8 text or hex.</p>
-        <div class="input-group">
-            <textarea id="hashcalc_input" placeholder="Enter text or hex..." style="min-height:70px;"></textarea>
-        </div>
-        <div class="input-group" style="display:flex;gap:8px;flex-wrap:wrap;">
-            <label style="color:#bbb;font-size:13px;"><input type="radio" name="hashcalc_mode" value="text" checked> Text (UTF-8)</label>
-            <label style="color:#bbb;font-size:13px;"><input type="radio" name="hashcalc_mode" value="hex"> Hex</label>
-            <button onclick="runHashCalc()" style="width:auto;padding:0 25px;">COMPUTE ALL HASHES</button>
-        </div>
-        <div id="out_hashcalc" style="margin-top:20px;"><pre style="color:#888;">[STATUS] Waiting for input...</pre></div>
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2723,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "53. Universal Hash Calculator (SHA256 / RIPEMD160 / HASH160 / Double-SHA256)";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(55);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

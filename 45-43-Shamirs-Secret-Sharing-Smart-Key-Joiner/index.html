@@ -2638,27 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #00bbff;"><i class="fas fa-puzzle-piece"></i> 43. Shamir's Secret Sharing & Smart Key Joiner
-        </h3>
-        <p style="color: #888; font-size: 12px; margin-top: -5px;">Reconstruct Private Keys from Fragmented Shards or
-            Shamir Shares</p>
-
-        <label style="font-size: 11px; color:#aaa;">Reconstruction Mode:</label>
-        <select id="sss_mode"
-            style="background:#111; color:#fff; border:1px solid #333; padding:5px; margin-bottom:10px;">
-            <option value="concatenate">Simple Join (Small fragments)</option>
-            <option value="shamir">Shamir's Logic (Lagrange Interpolation)</option>
-            <option value="xor">XOR logic (Part A ^ Part B)</option>
-        </select>
-
-        <textarea id="sss_shares" rows="6"
-            placeholder="Paste shards here (one per line, comma, or space)..."></textarea>
-
-        <button onclick="processSSSJoiner()" style="background-color: #00bbff; color: white;">Solve & Reconstruct
-            Key</button>
-        <pre id="out_sss_joiner"></pre>
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2731,30 +2711,39 @@
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "43. Shamir's Secret Sharing & Smart Key Joiner";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(45);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>

@@ -2638,31 +2638,7 @@
 
         <div id="tool-view">
             <!-- Breadcrumb will be injected here by JavaScript -->
-            <div id="toolContent" class="active">
-<h3 style="color: #00ccff;"><i class="fas fa-truck-monster"></i> 29. ScriptSig CPFP & RBF Raw TX Math Engineer
-        </h3>
-        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Build a network-bypassing child transaction to force
-            unstick a pending transaction (Child-Pays-For-Parent) or replace by fee.</p>
-        <input id="cpfp_raw_tx_input" placeholder="Enter 'Stuck' / Pending Raw Transaction Hex">
-        <input id="cpfp_priv_key" placeholder="Enter WIF Private Key of the Receiver (To sign the Child TX)">
-        <div class="input-group">
-            <input type="number" id="cpfp_fee_rate" value="150" min="10" placeholder="New Fee Rate (Satoshis/vByte)">
-        </div>
-        <button onclick="processCPFPtxBuilder()"
-            style="background-color: #00ccff; color: black; font-weight: bold;">Engineer High-Fee CPFP Hex
-            Payload</button>
-        <pre id="out_cpfp_engineer">
-Instructions:
-Is your transaction stuck with low fees? 
-1. Paste the raw Hex of the stuck transaction.
-2. Enter the Private key of the receiving end.
-3. Set an aggressive high fee rate.
-This math engine will isolate the stuck output, draft a brand new "Child" transaction, re-calculate the SIGHASH_ALL hashes, sign it using ECDSA, and give you a Raw Transaction Hex ready to be broadcasted to trick miners into confirming BOTH transactions instantly?
-</pre>
-    
-
-    <!-- 30. Taproot (BIP341) Address & Schnorr Signature Engineer -->
-</div>
+            <div id="toolContent"></div>
         </div>
 
         <footer class="footer">
@@ -2735,30 +2711,39 @@ This math engine will isolate the stuck output, draft a brand new "Child" transa
 </style>
 
         <script>
-        
-        function goHome() {
-            window.location.href = '../index.html';
-        }
-        function openTool(id) {
-            const tool = TOOLS_DATA.find(t => t.id === id);
-            if(tool) {
-                let sanitized = tool.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
-                let padId = tool.id < 10 ? '0' + tool.id : tool.id;
-                window.location.href = '../' + padId + '-' + sanitized + '/index.html';
-            }
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
-            const dirView = document.getElementById('directory-view');
-            const toolView = document.getElementById('tool-view');
-            if(dirView) dirView.classList.remove('active');
-            if(toolView) toolView.classList.add('active');
-            
-            const titleEl = document.getElementById('currentToolTitle');
-            if(titleEl) titleEl.innerText = "29. ScriptSig CPFP & RBF Raw TX Math Engineer";
-            
-            const firstInput = document.querySelector('#toolContent input, #toolContent textarea');
-            if (firstInput) firstInput.focus();
+            setTimeout(function() {
+                // Open the specific tool using the original app logic
+                if (typeof openTool === 'function') {
+                    openTool(31);
+                }
+                
+                // Override navigation functions so clicks navigate to the proper folders
+                window.goHome = function() {
+                    window.location.href = '../index.html';
+                };
+                
+                window.openTool = function(id) {
+                    const t = TOOLS_DATA.find(x => x.id === id);
+                    if(t) {
+                        let sanitized = t.title.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+                        let padId = t.id < 10 ? '0' + t.id : t.id;
+                        window.location.href = '../' + padId + '-' + sanitized + '/index.html';
+                    }
+                };
+                
+                // Also patch onclicks on cards just in case
+                const cards = document.querySelectorAll('.tool-card-btn');
+                cards.forEach(c => {
+                    c.onclick = function(e) {
+                        e.preventDefault();
+                        const title = c.querySelector('h3').innerText;
+                        const t = TOOLS_DATA.find(x => x.title.replace(/<[^>]+>/g, '') === title);
+                        if(t) window.openTool(t.id);
+                    };
+                });
+                
+            }, 250); // wait for renderCards and layout initialization
         });
         </script>
         </body>
