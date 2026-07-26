@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>57. HEX ↔ Text ↔ Binary ↔ Base64 Converter - CGTTUBE</title>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-dark, #121212); color: var(--text-light, #e0e0e0); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .standalone-header { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { background: transparent; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-btn:hover { background: #333; border-color: #666; }
+        .tool-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        #toolContent { background: #1e1e1e; padding: 25px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Ensure styles from original site apply properly by mocking the wrapper classes */
+        .page.active { display: block !important; opacity: 1 !important; visibility: visible !important; position: static !important; }
+    </style>
+</head>
+<body>
+    <div class="standalone-header">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Suite</a>
+        <h2 style="margin:0; font-size: 1.2rem; color: #00ff88;">57. HEX ↔ Text ↔ Binary ↔ Base64 Converter</h2>
+    </div>
+
+    <div class="tool-container">
+        <!-- Replicating the structure needed by the original CSS -->
+        <div class="page active">
+            <div id="toolContent">
+                <h3 style="color: var(--bitcoin-orange);"><i class="fas fa-code"></i> 57. HEX ↔ Text ↔ Binary ↔ Base64 Converter</h3>
+        <p style="color:#bbb;font-size:14px;">Multi-format byte converter for cryptographic payloads. Convert between hexadecimal, UTF-8 text, binary and Base64 representations instantly.</p>
+        <div class="input-group">
+            <textarea id="conv_input" placeholder="Enter value in any format..." style="min-height:70px;"></textarea>
+        </div>
+        <div class="input-group" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="runConvert('text','hex')" style="width:auto;padding:0 14px;">Text→Hex</button>
+            <button onclick="runConvert('hex','text')" style="width:auto;padding:0 14px;">Hex→Text</button>
+            <button onclick="runConvert('hex','bin')" style="width:auto;padding:0 14px;">Hex→Binary</button>
+            <button onclick="runConvert('bin','hex')" style="width:auto;padding:0 14px;">Binary→Hex</button>
+            <button onclick="runConvert('hex','b64')" style="width:auto;padding:0 14px;">Hex→Base64</button>
+            <button onclick="runConvert('b64','hex')" style="width:auto;padding:0 14px;">Base64→Hex</button>
+        </div>
+        <div id="out_conv" style="margin-top:20px;"><pre style="color:#888;">[STATUS] Waiting for input...</pre></div>
+    
+
+    <!-- 58. Address / RSZ Bit-Leak Analyzer (Nonce Bias Deep Scan) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Core crypto library -->
+    <script src="../shared/lib.js"></script>
+    <!-- Tool specific logic -->
+    <script src="script.js"></script>
+</body>
+</html>

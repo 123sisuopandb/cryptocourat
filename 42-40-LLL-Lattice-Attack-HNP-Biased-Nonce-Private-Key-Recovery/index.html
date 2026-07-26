@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40. LLL Lattice Attack — HNP / Biased-Nonce Private Key Recovery - CGTTUBE</title>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-dark, #121212); color: var(--text-light, #e0e0e0); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .standalone-header { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { background: transparent; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-btn:hover { background: #333; border-color: #666; }
+        .tool-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        #toolContent { background: #1e1e1e; padding: 25px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Ensure styles from original site apply properly by mocking the wrapper classes */
+        .page.active { display: block !important; opacity: 1 !important; visibility: visible !important; position: static !important; }
+    </style>
+</head>
+<body>
+    <div class="standalone-header">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Suite</a>
+        <h2 style="margin:0; font-size: 1.2rem; color: #00ff88;">40. LLL Lattice Attack — HNP / Biased-Nonce Private Key Recovery</h2>
+    </div>
+
+    <div class="tool-container">
+        <!-- Replicating the structure needed by the original CSS -->
+        <div class="page active">
+            <div id="toolContent">
+                <h3 style="color: #ff00ff;"><i class="fas fa-layer-group"></i> 40. LLL Lattice Attack — HNP / Biased-Nonce Private Key Recovery</h3>
+        <p style="color: #888; font-size: 11px; margin-top: -5px;">Boneh–Venkatesan lattice attack: recovers d from biased nonces
+            <b>without needing same-r</b>. Math: k = s⁻¹(z+rd) mod N → d·tᵢ − aᵢ ≡ kᵢ (small) → LLL solves for d.</p>
+
+        <div style="background:rgba(255,255,255,0.05); padding:10px; border:1px solid #330033; margin-bottom:10px;">
+            <label style="font-size: 9px; color:#ff00ff;">STEP 1: AUTO-FETCH (ADDRESS) OR MANUAL RSZ:</label>
+            <input id="hnp_input" placeholder="Enter Bitcoin Address to Fetch"
+                style="border-color: #440044; color: #fff;">
+            <button onclick="autoFetchHNPData()"
+                style="background:#222; color:#ff00ff; border:1px solid #ff00ff; width:100%; margin-top:5px; font-size:10px; cursor:pointer;">⚡
+                FETCH SIGNATURES FROM BLOCKCHAIN</button>
+        </div>
+
+        <label style="font-size: 9px; color:#ff00ff;">SIGNATURE DATA (MANUAL R:S:Z LIST):</label>
+        <textarea id="hnp_bulk" placeholder="r1:s1:z1\nr2:s2:z2..."
+            style="height:100px; border-color: #440044; color: #fff;"></textarea>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <div style="flex:1;">
+                <label style="font-size: 9px; color:#ff00ff;">BIAS MODEL:</label>
+                <select id="hnp_bias_type"
+                    style="background:#000; color:#ff00ff; border:1px solid #440044; width:100%; padding:5px; font-size:11px;">
+                    <option value="msb">Known MSB (Most Significant Bits)</option>
+                    <option value="lsb">Known LSB (Least Significant Bits)</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size: 9px; color:#ff00ff;">BIAS AMOUNT (BITS):</label>
+                <input id="hnp_bits" value="8" style="border-color: #440044; color: #fff;">
+                <button onclick="runHNPSolver()" class="btn-primary"
+                    style="background:#00ffa2; color:#000; margin-top:10px; font-weight:bold; width:100%;">
+                    <i class="fa fa-microchip"></i> INITIALIZE ATTACK (LLL)
+                </button>
+                <button onclick="exportHNPMatrix()" class="btn-secondary"
+                    style="background:#222; color:#00ffcc; border:1px solid #00ffcc; margin-top:5px; font-size:10px; width:100%;">
+                    <i class="fa fa-save"></i> EXPORT TO TXT
+                </button>
+                <button onclick="exportOne('out_hnp', 'txt')" class="btn-secondary"
+                    style="background:#222; color:#fff; border:1px solid #444; margin-top:5px; font-size:10px; width:100%;">
+                    <i class="fa fa-file-export"></i> DOWNLOAD RESULTS
+                </button>
+                <pre id="out_hnp"
+                    style="margin-top:10px; font-size:11px; color: #00ffcc; border:1px solid #113322; overflow-x:auto;"></pre>
+            </div>
+        </div>
+    
+
+    <!-- 41. K-Value Circular Shift Exploit -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Core crypto library -->
+    <script src="../shared/lib.js"></script>
+    <!-- Tool specific logic -->
+    <script src="script.js"></script>
+</body>
+</html>

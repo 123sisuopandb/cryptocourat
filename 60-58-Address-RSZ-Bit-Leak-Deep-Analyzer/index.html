@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>58. Address / RSZ → Bit-Leak Deep Analyzer - CGTTUBE</title>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-dark, #121212); color: var(--text-light, #e0e0e0); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .standalone-header { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { background: transparent; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-btn:hover { background: #333; border-color: #666; }
+        .tool-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        #toolContent { background: #1e1e1e; padding: 25px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Ensure styles from original site apply properly by mocking the wrapper classes */
+        .page.active { display: block !important; opacity: 1 !important; visibility: visible !important; position: static !important; }
+    </style>
+</head>
+<body>
+    <div class="standalone-header">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Suite</a>
+        <h2 style="margin:0; font-size: 1.2rem; color: #00ff88;">58. Address / RSZ → Bit-Leak Deep Analyzer</h2>
+    </div>
+
+    <div class="tool-container">
+        <!-- Replicating the structure needed by the original CSS -->
+        <div class="page active">
+            <div id="toolContent">
+                <h3 style="color: #00ffcc;"><i class="fas fa-bug"></i> 58. Address / RSZ → Bit-Leak Deep Analyzer</h3>
+        <p style="color:#bbb;font-size:13px;">Two workflows:
+            (A) Enter a Bitcoin address + count → tool fetches transactions, extracts every <b>R:S:Z</b>, prints them in full, then runs the full pipeline.
+            (B) Paste R:S:Z lines directly and skip fetching. Both paths run: same-r reuse scan, r-value bit distribution, LLL Boneh–Venkatesan sweep, and — after key recovery — full <b>k reconstruction</b> with per-signature MSB/LSB bit-leak proof. Every intermediate value is printed in full (no truncation).</p>
+
+        <!-- MODE A: fetch from address -->
+        <div style="background:rgba(0,255,204,0.05);padding:10px;border:1px solid #0a5;margin-bottom:10px;">
+            <div style="color:#00ffcc;font-size:11px;font-weight:bold;margin-bottom:6px;">▸ MODE A — Fetch from Address</div>
+            <label style="font-size:10px;color:#00ffcc;">BITCOIN ADDRESS:</label>
+            <input id="bl_addr" placeholder="1..., 3..., or bc1..." style="border-color:#0a5;color:#fff;">
+            <div style="display:flex;gap:10px;margin-top:8px;">
+                <div style="flex:1;">
+                    <label style="font-size:10px;color:#00ffcc;">TRANSACTIONS TO FETCH:</label>
+                    <input id="bl_count" type="number" value="20" min="2" max="200" style="border-color:#0a5;color:#fff;">
+                </div>
+                <div style="flex:2;display:flex;gap:6px;align-items:flex-end;">
+                    <button onclick="bitLeakFetchOnly()" style="background:#0088aa;color:#fff;font-weight:bold;flex:1;padding:9px;cursor:pointer;border:none;">
+                        <i class="fa fa-download"></i> FETCH R:S:Z ONLY
+                    </button>
+                    <button onclick="runBitLeakAnalyzer('address')" style="background:#00ffcc;color:#000;font-weight:bold;flex:1;padding:9px;cursor:pointer;border:none;">
+                        <i class="fa fa-microscope"></i> FETCH + ANALYZE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE B: paste RSZ -->
+        <div style="background:rgba(255,204,0,0.05);padding:10px;border:1px solid #ffcc00;margin-bottom:10px;">
+            <div style="color:#ffcc00;font-size:11px;font-weight:bold;margin-bottom:6px;">▸ MODE B — Direct R:S:Z Input (skip fetching)</div>
+            <label style="font-size:10px;color:#ffcc00;">SIGNATURES (one per line, format  r:s:z  hex, colon/space/comma separated):</label>
+            <textarea id="bl_rsz" placeholder="r1:s1:z1&#10;r2:s2:z2&#10;..." style="height:120px;border-color:#ffcc00;color:#fff;font-family:monospace;font-size:11px;"></textarea>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+                <button onclick="runBitLeakAnalyzer('rsz')" style="background:#ffcc00;color:#000;font-weight:bold;flex:2;padding:10px;cursor:pointer;border:none;">
+                    <i class="fa fa-calculator"></i> ANALYZE (Stats + LLL)
+                </button>
+                <button onclick="runSmallKIntersect('rsz')" style="background:#ff66cc;color:#000;font-weight:bold;flex:3;padding:10px;cursor:pointer;border:none;">
+                    <i class="fa fa-key"></i> SMALL-k INTERSECTION ATTACK
+                </button>
+            </div>
+            <div style="font-size:10px;color:#ffaa88;margin-top:4px;">Small-k Intersection: for each signature enumerates candidate d values from guessed k bit-patterns (0..BIAS bits), then intersects across sigs. Matches Python "possible private key" scripts. Use a single number in BIAS (e.g. <b>125</b>) to sweep k bit-length 1..125.</div>
+        </div>
+
+        <!-- shared attack params -->
+        <div style="background:rgba(255,255,255,0.04);padding:10px;border:1px solid #113a36;margin-bottom:10px;display:flex;gap:10px;">
+            <div style="flex:1;">
+                <label style="font-size:10px;color:#00ffcc;">BIAS SWEEP (bits, 1–256):</label>
+                <input id="bl_bias_range" value="125" min="1" max="256" placeholder="single (125) or range (4-12)" style="border-color:#0a5;color:#fff;">
+                <div style="font-size:9px;color:#888;margin-top:2px;">e.g. <b>125</b> = attack exactly 125-bit k · <b>4-12</b> = sweep · <b>1-256</b> = full brute</div>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:10px;color:#00ffcc;">LATTICE SIZE m:</label>
+                <input id="bl_m" value="auto" placeholder="auto" style="border-color:#0a5;color:#fff;">
+                <div style="font-size:9px;color:#888;margin-top:2px;">leave <b>auto</b> — tool picks m = min(sigs, 40)</div>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:10px;color:#00ffcc;">TARGET ADDRESS (optional, RSZ mode):</label>
+                <input id="bl_addr_optional" placeholder="auto-derived from RSZ if empty" style="border-color:#0a5;color:#fff;">
+            </div>
+        </div>
+        <div style="background:rgba(255,102,204,0.06);border:1px dashed #ff66cc;padding:8px;font-size:10px;color:#ffaaee;margin-bottom:8px;">
+            <b>SMALL-k INTERSECTION</b> automatically runs: (1) public-key recovery from R:S:Z, (2) same-r reuse scan, (3) MSB-stuck-bit patterns, (4) LSB-stuck-bit patterns, (5) MSB+LSB mixed patterns, (6) power-of-two candidates — then intersects across signatures to find the true private key.
+        </div>
+
+        <button onclick="exportOne('out_bitleak','txt')" style="background:#222;color:#00ffcc;border:1px solid #00ffcc;margin-top:5px;font-size:10px;width:100%;padding:6px;cursor:pointer;">
+            <i class="fa fa-file-export"></i> DOWNLOAD FULL FORENSIC REPORT
+        </button>
+        <pre id="out_bitleak" style="margin-top:10px;font-size:11px;color:#00ffcc;border:1px solid #0a5;padding:10px;overflow-x:auto;max-height:1200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">[STATUS] Waiting for address or R:S:Z input...</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core crypto library -->
+    <script src="../shared/lib.js"></script>
+    <!-- Tool specific logic -->
+    <script src="script.js"></script>
+</body>
+</html>

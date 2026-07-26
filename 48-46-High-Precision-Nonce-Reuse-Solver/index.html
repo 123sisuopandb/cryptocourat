@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>46. High-Precision Nonce Reuse Solver - CGTTUBE</title>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-dark, #121212); color: var(--text-light, #e0e0e0); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .standalone-header { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { background: transparent; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-btn:hover { background: #333; border-color: #666; }
+        .tool-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        #toolContent { background: #1e1e1e; padding: 25px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Ensure styles from original site apply properly by mocking the wrapper classes */
+        .page.active { display: block !important; opacity: 1 !important; visibility: visible !important; position: static !important; }
+    </style>
+</head>
+<body>
+    <div class="standalone-header">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Suite</a>
+        <h2 style="margin:0; font-size: 1.2rem; color: #00ff88;">46. High-Precision Nonce Reuse Solver</h2>
+    </div>
+
+    <div class="tool-container">
+        <!-- Replicating the structure needed by the original CSS -->
+        <div class="page active">
+            <div id="toolContent">
+                <h3 style="color: #00ff00;"><i class="fas fa-microchip"></i> 46. High-Precision Nonce Reuse Solver</h3>
+        <p style="color: #888; font-size: 11px; margin-top: -5px;">Direct Algebraic Key Extraction: Recovers d via
+            R-collision analysis (k-reuse vulnerability).</p>
+
+        <div style="background:rgba(255,255,255,0.05); padding:10px; border:1px solid #113311; margin-bottom:10px;">
+            <label style="font-size: 9px; color:#00ff00;">SHARED nonce point (R-VALUE HEX):</label>
+            <input id="nonce_r" placeholder="The repeating R value" style="border-color: #004400; color: #fff;">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1; border-right:1px solid #113311; padding-right:10px;">
+                <label style="font-size: 9px; color:#00ff00;">SIGNATURE 1:</label>
+                <input id="nonce_s1" placeholder="S1 Value (Hex)"
+                    style="border-color: #004400; color: #fff; margin-bottom:5px;">
+                <input id="nonce_z1" placeholder="Z1 (Message Hash Hex)" style="border-color: #004400; color: #fff;">
+            </div>
+            <div style="flex:1;">
+                <label style="font-size: 9px; color:#00ff00;">SIGNATURE 2:</label>
+                <input id="nonce_s2" placeholder="S2 Value (Hex)"
+                    style="border-color: #004400; color: #fff; margin-bottom:5px;">
+                <input id="nonce_z2" placeholder="Z2 (Message Hash Hex)" style="border-color: #004400; color: #fff;">
+            </div>
+        </div>
+
+        <button onclick="runNonceReuseSolver()"
+            style="background: #00ff00; color: #000; margin-top:15px; font-weight:bold;">EXTRACT PRIVATE KEY
+            (ALGEBRAIC)</button>
+        <pre id="out_nonce"
+            style="margin-top:10px; font-size:11px; color: #00ff00; border:1px solid #003300; overflow-x:auto;"></pre>
+    
+
+    <!-- 47. PSBT Forensic Analyzer -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Core crypto library -->
+    <script src="../shared/lib.js"></script>
+    <!-- Tool specific logic -->
+    <script src="script.js"></script>
+</body>
+</html>

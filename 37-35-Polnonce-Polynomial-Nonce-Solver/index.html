@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>35. Polnonce (Polynomial Nonce) Solver - CGTTUBE</title>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-dark, #121212); color: var(--text-light, #e0e0e0); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .standalone-header { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { background: transparent; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-btn:hover { background: #333; border-color: #666; }
+        .tool-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        #toolContent { background: #1e1e1e; padding: 25px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Ensure styles from original site apply properly by mocking the wrapper classes */
+        .page.active { display: block !important; opacity: 1 !important; visibility: visible !important; position: static !important; }
+    </style>
+</head>
+<body>
+    <div class="standalone-header">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Suite</a>
+        <h2 style="margin:0; font-size: 1.2rem; color: #00ff88;">35. Polnonce (Polynomial Nonce) Solver</h2>
+    </div>
+
+    <div class="tool-container">
+        <!-- Replicating the structure needed by the original CSS -->
+        <div class="page active">
+            <div id="toolContent">
+                <h3 style="color: #00ffcc;"><i class="fas fa-project-diagram"></i> 35. Polnonce (Polynomial Nonce) Solver</h3>
+        <p style="color: #bbb; font-size: 13px; margin-top: -5px;">Detect and exploit nonces generated via
+            Linear/Polynomial patterns (LLL Lattice Reduction).</p>
+        <textarea id="polnonce_input" rows="5"
+            style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: #fff; border: 1px solid #333; font-family: monospace;"
+            placeholder="Enter RSZ lines (Format: R:S:Z per line)"></textarea>
+        <button onclick="processPolnonce()"
+            style="background-color: #00ffcc; color: black; font-weight: bold; width: 100%;">Run Polynomial Pattern
+            Analysis</button>
+        <pre id="out_polnonce">
+Instructions:
+If the random number generator (RNG) used for 'k' is weak (e.g., LCG or increments), signatures become linked.
+1. Enter RSZ lines from multiple transactions of the same address.
+2. The tool will check for linear relations and generate a high-performance LLL exploit script.
+</pre>
+    
+
+    <!-- 36. Short Nonce Detector (HNP Vulnerability) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Core crypto library -->
+    <script src="../shared/lib.js"></script>
+    <!-- Tool specific logic -->
+    <script src="script.js"></script>
+</body>
+</html>
